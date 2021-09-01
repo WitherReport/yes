@@ -1,0 +1,243 @@
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("WR AUT GUI", "DarkTheme")
+local Main = Window:NewTab("Main")
+local Auto = Window:NewTab("Auto Farns")
+local ESP = Window:NewTab("ESP")
+
+local vu = game:GetService("VirtualUser")
+
+local plr = game.Players.LocalPlayer
+
+local ch = Main:NewSection("Character")
+local af = Auto:NewSection("idk")
+local es = ESP:NewSection("Items")
+
+function returnplayer(name)
+	local len = name.len()
+	for i, v in pairs(game.Players:GetChildren()) do
+		if v.Name:sub(0,len) == name then
+			return v
+		end
+		return nil
+	end
+end
+
+function HRPCframeTP(p)
+	plr.Character.HumanoidRootPart.CFrame = p
+end
+function HRPPositionTP(p)
+	plr.Character.HumanoidRootPart.Position = p
+end
+
+function GetPlayerCFrame()
+	return plr.Character.HumanoidRootPart.CFrame
+end
+
+if not workspace:FindFirstChild("ESS") then
+	local folder = Instance.new("Folder", workspace)
+	folder.Name = "ESS"
+end
+
+function CreateESP(item)
+	local ESSSP = Instance.new("Part")
+	ESSSP.Name = "E SS S        P"
+	ESSSP.BottomSurface = Enum.SurfaceType.Smooth
+	ESSSP.TopSurface = Enum.SurfaceType.Smooth
+	ESSSP.Transparency = 1
+	ESSSP.Anchored = true
+	ESSSP.CanCollide = false
+	ESSSP.Size = Vector3.new(4, 1, 2)
+	ESSSP.CFrame = item.Parent.CFrame
+
+	local BillboardGui = Instance.new("BillboardGui")
+	BillboardGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+	BillboardGui.Active = true
+	BillboardGui.LightInfluence = 1
+	BillboardGui.AlwaysOnTop = true
+	BillboardGui.Size = UDim2.new(8, 0, 2, 0)
+	BillboardGui.ClipsDescendants = true
+	BillboardGui.Parent = ESSSP
+
+	local TextLabel = Instance.new("TextLabel")
+	TextLabel.Size = UDim2.new(1, 0, 1, 0)
+	TextLabel.BackgroundTransparency = 1
+	TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+	TextLabel.FontSize = Enum.FontSize.Size14
+	TextLabel.TextSize = 14
+	TextLabel.Text = item.Name
+	TextLabel.TextColor3 = Color3.fromRGB(93, 209, 122)
+	TextLabel.TextWrap = true
+	TextLabel.Font = Enum.Font.GothamBold
+	TextLabel.TextWrapped = true
+	TextLabel.TextScaled = true
+	TextLabel.Parent = BillboardGui
+
+	ESSSP.Parent = workspace.ESS
+end
+
+function ClearESP()
+	for i, v in pairs(workspace.ESS:GetChildren()) do
+		v:Destroy()
+	end
+end
+
+function IsDistanceBetweenPlayerAndPartByClickDetector(p)
+	if(plr.Character.HumanoidRootPart.Position - p.Position).magnitude then
+		if (plr.Character.HumanoidRootPart.Position - p.Position).magnitude <= p:FindFirstChildOfClass("ClickDetector").MaxActivationDistance then
+			return true
+		end
+		return false
+	end
+end
+
+ch:NewButton("Invisible", "", function()
+	local chr = plr.Character
+	--local pos = chr.HumanoidRootPart.CFrame
+    --HRPCframeTP(CFrame.new(0,2000,0))
+    --wait(1)
+    chr.HumanoidRootPart.RootJoint:Destroy()
+    --chr.LowerTorso.Anchored = true
+    --wait(.1)
+    --HRPCframeTP(pos)
+end)
+ch:NewButton("Stand Invisible", "", function()
+	local chr = plr.Character
+	--local pos = chr.HumanoidRootPart.CFrame
+    --HRPCframeTP(CFrame.new(0,2000,0))
+    --wait(1)
+    chr.Stand.StandHumanoidRootPart.RootJoint:Destroy()
+    --chr.LowerTorso.Anchored = true
+    --wait(.1)
+    --HRPCframeTP(pos)
+end)
+getgenv().AS = false
+getgenv().AC = false
+getgenv().AM = false
+getgenv().MTP = false
+
+ch:NewSlider("Walk Speed", "SliderInfo", 500, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+ch:NewSlider("Jump Power", "SliderInfo", 500, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
+end)
+
+af:NewToggle("Auto Sand TP", "", function(state)
+	getgenv().AS = state
+    if state then
+        repeat
+        	local s, e = pcall(function()
+        		for i, v in pairs(game:GetService("Workspace").ItemSpawns["Sand Debris"]:GetChildren()) do
+        			if #v:GetChildren() > 0 then
+        				HRPCframeTP(v.CFrame*CFrame.new(0,2,0))
+        				wait(.1)
+        				vu:SetKeyDown("e")
+        				wait(4)
+        				vu:SetKeyUp("e")
+        				wait(1)
+        			end
+        			if getgenv().AS == false then return end
+        		end
+        	end)
+        	wait(5)
+        	print(s,e)
+        until getgenv().AS == false
+    end
+end)
+af:NewToggle("Meteor TP", "", function(state)
+	getgenv().AM = state
+    if state then
+        repeat
+        	local s, e = pcall(function()
+        		for i, v in pairs(game:GetService("Workspace").ItemSpawns["Meteors"]:GetChildren()) do
+        			if #v:GetChildren() > 0 then
+        				HRPCframeTP(v.CFrame*CFrame.new(0,2,0))
+        				wait(.4)
+        				vu:SetKeyDown("e")
+        				wait(4)
+        				vu:SetKeyUp("e")
+        				wait(1)
+        			end
+        			if getgenv().AM == false then return end
+        		end
+        	end)
+        	wait(5)
+        	print(s,e)
+        until getgenv().AM == false
+    end
+end)
+af:NewToggle("Chest TP (march pa)", "", function(state)
+	getgenv().AC = state
+    if state then
+        repeat
+        	local s, e = pcall(function()
+        		for i, v in pairs(game:GetService("Workspace").ItemSpawns.Chests:GetChildren()) do
+        			if #v:GetChildren() == 1 then
+        				HRPCframeTP(v.CFrame*CFrame.new(0,2,0))
+        				wait(.4)
+        				vu:SetKeyDown("e")
+        				wait(4)
+        				vu:SetKeyUp("e")
+        				wait(1)
+        			end
+        			if getgenv().AS == false then return end
+        		end
+        	end)
+        	wait(5)
+        	print(s,e)
+        until getgenv().AC == false
+    end
+end)
+local r
+af:NewToggle("Mob TP", "", function(state)
+	getgenv().MTP = state
+    if state then
+        r = game:GetService("RunService").Heartbeat:Connect(function()
+        	HRPCframeTP(getgenv().TARGET.HumanoidRootPart.CFrame*CFrame.new(0,0,getgenv().Distance))
+        end)
+    else
+    	r:Disconnect()
+    end
+end)
+local oldList = {}
+local newList = {}
+
+getgenv().TARGET = nil
+getgenv().Distance = 5
+
+local dropdown = af:NewDropdown("Mob to TP to","", oldList, function(op)
+	getgenv().TARGET = game:GetService("Workspace").Living[op]
+end)
+
+
+af:NewSlider("Distance", "", 10, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+    getgenv().Distance = s
+end)
+
+getgenv().ESP = false
+es:NewToggle("Item ESP", "", function(state)
+	getgenv().ESP = state
+    if state then
+        repeat
+        	ClearESP()
+        	for _, folders in pairs(workspace.ItemSpawns:GetChildren()) do
+        		for i, v in pairs(folders:GetChildren()) do
+        			if v:GetChildren()[1] then
+        				CreateESP(v:GetChildren()[1])
+        			end
+        		end
+        	end
+        	wait(5)
+        until getgenv().ESP == false
+    else
+    	ClearESP()
+    end
+end)
+while true do
+	newList = {}
+	for i, v in pairs(game:GetService("Workspace").Living:GetChildren()) do
+		newList[i] = v.Name
+	end
+	dropdown:Refresh(newList)
+	wait(5)
+end
