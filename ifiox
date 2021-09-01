@@ -180,7 +180,7 @@ af:NewToggle("Chest TP (march pa)", "", function(state)
         				vu:SetKeyUp("e")
         				wait(1)
         			end
-        			if getgenv().AS == false then return end
+        			if getgenv().AC == false then return end
         		end
         	end)
         	wait(5)
