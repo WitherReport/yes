@@ -3,6 +3,8 @@ local Window = Library.CreateLib("WR AUT GUI", "DarkTheme")
 local Main = Window:NewTab("Main")
 local Auto = Window:NewTab("Auto Farns")
 local ESP = Window:NewTab("ESP")
+local Combat = Window:NewTab("Combat")
+local TP = Window:NewTab("TP")
 
 local vu = game:GetService("VirtualUser")
 
@@ -11,6 +13,8 @@ local plr = game.Players.LocalPlayer
 local ch = Main:NewSection("Character")
 local af = Auto:NewSection("idk")
 local es = ESP:NewSection("Items")
+local co = Combat:NewSection("Combat")
+local tp = TP:NewSection("")
 
 function returnplayer(name)
 	local len = name.len()
@@ -25,12 +29,55 @@ end
 function HRPCframeTP(p)
 	plr.Character.HumanoidRootPart.CFrame = p
 end
+function HRPCframeTweenTP(p, t)
+	game.TweenService:Create(plr.Character.HumanoidRootPart, TweenInfo.new(t), {CFrame = p}):Play()
+end
 function HRPPositionTP(p)
 	plr.Character.HumanoidRootPart.Position = p
 end
 
 function GetPlayerCFrame()
 	return plr.Character.HumanoidRootPart.CFrame
+end
+
+function Press(t)
+	local args = {
+		[1] = "KEY",
+		[2] = t
+	}
+
+	game:GetService("ReplicatedStorage").Remotes.Input:FireServer(unpack(args))
+	local args = {
+		[1] = t
+	}
+
+	game:GetService("ReplicatedStorage").Remotes.InputFunc:InvokeServer(unpack(args))
+	wait()
+	local args = {
+		[1] = "KEY",
+		[2] = "END-"..t
+	}
+
+	game:GetService("ReplicatedStorage").Remotes.Input:FireServer(unpack(args))
+	local args = {
+	    [1] = "END-"..t
+	}
+
+	game:GetService("ReplicatedStorage").Remotes.InputFunc:InvokeServer(unpack(args))
+end
+function CreateButton(t, btype)
+	if btype == 1 then
+		getgenv()[t] = false
+		af:NewToggle("Auto "..t, "", function(state)
+			getgenv()[t] = state
+		    if state then
+		        repeat
+		        	Press(t)
+		        	wait(.1)
+		        until getgenv()[t] == false
+		    end
+		end)
+	end
 end
 
 if not workspace:FindFirstChild("ESS") then
@@ -54,7 +101,7 @@ function CreateESP(item)
 	BillboardGui.Active = true
 	BillboardGui.LightInfluence = 1
 	BillboardGui.AlwaysOnTop = true
-	BillboardGui.Size = UDim2.new(8, 0, 2, 0)
+	BillboardGui.Size = UDim2.new(800, 0, 200, 0)
 	BillboardGui.ClipsDescendants = true
 	BillboardGui.Parent = ESSSP
 
@@ -129,12 +176,13 @@ af:NewToggle("Auto Sand TP", "", function(state)
         	local s, e = pcall(function()
         		for i, v in pairs(game:GetService("Workspace").ItemSpawns["Sand Debris"]:GetChildren()) do
         			if #v:GetChildren() > 0 then
-        				HRPCframeTP(v.CFrame*CFrame.new(0,2,0))
+        				HRPCframeTweenTP(v.CFrame*CFrame.new(0,2,0), 1)
+        				wait(1)
         				wait(.1)
         				vu:SetKeyDown("e")
-        				wait(4)
-        				vu:SetKeyUp("e")
         				wait(1)
+        				vu:SetKeyUp("e")
+        				wait(3)
         			end
         			if getgenv().AS == false then return end
         		end
@@ -151,12 +199,12 @@ af:NewToggle("Meteor TP", "", function(state)
         	local s, e = pcall(function()
         		for i, v in pairs(game:GetService("Workspace").ItemSpawns["Meteors"]:GetChildren()) do
         			if #v:GetChildren() > 0 then
-        				HRPCframeTP(v.CFrame*CFrame.new(0,2,0))
+        				HRPCframeTweenTP(v.CFrame*CFrame.new(0,2,0), 1)
+        				wait(1)
         				wait(.4)
         				vu:SetKeyDown("e")
-        				wait(4)
-        				vu:SetKeyUp("e")
         				wait(1)
+        				vu:SetKeyUp("e")
         			end
         			if getgenv().AM == false then return end
         		end
@@ -173,12 +221,12 @@ af:NewToggle("Chest TP (march pa)", "", function(state)
         	local s, e = pcall(function()
         		for i, v in pairs(game:GetService("Workspace").ItemSpawns.Chests:GetChildren()) do
         			if #v:GetChildren() == 1 then
-        				HRPCframeTP(v.CFrame*CFrame.new(0,2,0))
+        				HRPCframeTweenTP(v.CFrame*CFrame.new(0,2,0), 1)
+        				wait(1)
         				wait(.4)
         				vu:SetKeyDown("e")
-        				wait(4)
-        				vu:SetKeyUp("e")
         				wait(1)
+        				vu:SetKeyUp("e")
         			end
         			if getgenv().AC == false then return end
         		end
@@ -192,11 +240,21 @@ local r
 af:NewToggle("Mob TP", "", function(state)
 	getgenv().MTP = state
     if state then
-        r = game:GetService("RunService").Heartbeat:Connect(function()
-        	HRPCframeTP(getgenv().TARGET.HumanoidRootPart.CFrame*CFrame.new(0,0,getgenv().Distance))
+        r = game:GetService("RunService").RenderStepped:Connect(function()
+        	HRPCframeTP(game:GetService("Workspace").Living[getgenv().TARGET].HumanoidRootPart.CFrame*CFrame.new(0,0,getgenv().Distance))
         end)
     else
     	r:Disconnect()
+    end
+end)
+local r2
+af:NewToggle("Auto Take DMG", "", function(state)
+    if state then
+        r2 = game:GetService("RunService").RenderStepped:Connect(function()
+        	HRPCframeTP(game:GetService("Workspace").Living[getgenv().TARGET].HumanoidRootPart.CFrame*CFrame.new(0,0,-getgenv().Distance))
+        end)
+    else
+    	r2:Disconnect()
     end
 end)
 local oldList = {}
@@ -206,13 +264,24 @@ getgenv().TARGET = nil
 getgenv().Distance = 5
 
 local dropdown = af:NewDropdown("Mob to TP to","", oldList, function(op)
-	getgenv().TARGET = game:GetService("Workspace").Living[op]
+	getgenv().TARGET = op
 end)
 
 
 af:NewSlider("Distance", "", 10, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
     getgenv().Distance = s
 end)
+
+CreateButton("E", 1)
+CreateButton("Q", 1)
+CreateButton("R", 1)
+CreateButton("T", 1)
+CreateButton("G", 1)
+CreateButton("F", 1)
+CreateButton("Y", 1)
+CreateButton("H", 1)
+CreateButton("J", 1)
+CreateButton("LMB", 1)
 
 getgenv().ESP = false
 es:NewToggle("Item ESP", "", function(state)
@@ -232,6 +301,19 @@ es:NewToggle("Item ESP", "", function(state)
     else
     	ClearESP()
     end
+end)
+
+for i, v in pairs(workspace.NPCS:GetChildren()) do
+	tp:NewButton(v.Name, "", function()
+		HRPCframeTP(v.HumanoidRootPart.CFrame*CFrame.new(0,3,0))
+	end)
+end
+co:NewButton("TP To The Void", "Tusk is required", function()
+	local chr = plr.Character
+	local cf = chr.HumanoidRootPart.Stand2Human.C0
+    chr.HumanoidRootPart.Stand2Human.C0 = CFrame.new(0,100,0)
+    wait(2)
+    chr.HumanoidRootPart.Stand2Human.C0 = cf
 end)
 while true do
 	newList = {}
