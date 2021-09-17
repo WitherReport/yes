@@ -315,11 +315,44 @@ co:NewButton("TP To The Void", "Tusk is required", function()
     wait(2)
     chr.HumanoidRootPart.Stand2Human.C0 = cf
 end)
+
+local oldList2 = {}
+local newList2 = {}
+
+getgenv().TARGET2 = nil
+getgenv().Distance2 = 5
+
+local dropdown2 = co:NewDropdown("Mob to TP to","", oldList2, function(op)
+	getgenv().TARGET2 = op
+end)
+
+
+co:NewSlider("Distance", "", 10, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+    getgenv().Distance2 = s
+end)
+
+local r3
+getgenv().STP = state
+co:NewToggle("Stand TP", "", function(state)
+	getgenv().STP = state
+	local chr = plr.Character
+    chr.HumanoidRootPart.Stand2Human.Part0 = game:GetService("Workspace").Living[getgenv().TARGET2].HumanoidRootPart
+    if state then
+        r3 = game:GetService("RunService").RenderStepped:Connect(function()
+			chr.HumanoidRootPart.Stand2Human.C0 = CFrame.new(0,0,getgenv().Distance2)
+        end)
+    else
+    	r3:Disconnect()
+    end
+end)
 while true do
 	newList = {}
+	newList2 = {}
 	for i, v in pairs(game:GetService("Workspace").Living:GetChildren()) do
 		newList[i] = v.Name
+		newList2[i] = v.Name
 	end
 	dropdown:Refresh(newList)
+	dropdown2:Refresh(newList2)
 	wait(5)
 end
