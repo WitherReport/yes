@@ -72,7 +72,7 @@ local NoClipThread;
 function module.NoClip()
 	NoClipThread = game["Run Service"].RenderStepped:Connect(function()
 		local plr = game.Players.LocalPlayer
-		for i, v in pairs(plr.Character:GetDescendants()) do
+		for i, v in pairs(plr.Character:GetChildren()) do
 			if v:IsA("Part") or v:IsA("MeshPart") then
 				v.CanCollide = false
 			end
