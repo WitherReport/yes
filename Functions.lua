@@ -84,4 +84,18 @@ end
 function module.Clip()
 	NoClipThread:Disconnect()
 end
+function module.SetDescendantsCollide(a, b)
+	if a then
+		for i, v in pairs(b) do
+			i.CanCollide = v
+		end
+	else
+		local c = {}
+		for i, v in pairs(b:GetDescendants()) do
+			c[v] = v.CanCollide
+			v.CanCollide = false
+		end
+		return c
+	end
+end
 return module
